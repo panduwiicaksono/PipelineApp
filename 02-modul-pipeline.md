@@ -59,8 +59,8 @@ dari rata-rata tertimbang (weighted average) sesuai bobot section di atas.
   item checklist sudah punya status apapun — OK/Revisi/NO, tidak harus semua OK).
 - Tombol "+ Tambah Pipeline" di kanan atas, mengarah ke "/pipeline/new".
 - Isi dengan minimal 6-8 data contoh, pakai nama entitas ini (konsisten dengan data
-  perusahaan yang nanti dipakai di Dashboard): BroilerX, ACML, Kinglab, MyRobin, Yoona,
-  Rakamin, ACMD, Snackzone. Variasikan totalProgress (ada yang 0%, ~45%, ~92%, 100%) supaya
+  perusahaan yang nanti dipakai di Dashboard): Ternakita, Invonex, Labmentari, Kerjabantu, Cahaya Fatura,
+  Nusantara Piutang, Dana Fatura Prima, Kudapan Rasa. Variasikan totalProgress (ada yang 0%, ~45%, ~92%, 100%) supaya
   kelihatan behavior tombol Release/Export yang enabled/disabled.
 
 ## Halaman Add New (route "/pipeline/new")

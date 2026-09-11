@@ -11,22 +11,22 @@ export interface TargetRow {
 // Data statis "Target Pipelines" — sesuai sheet Excel sumber, tidak ada modul input terpisah
 // untuk target sehingga tetap hardcoded (lihat catatan asumsi).
 export const TARGET_PIPELINES: TargetRow[] = [
-  { entitas: 'BroilerX', oktNew: 1_000_000_000, oktRevolving: 0, novNew: 2_000_000_000, novRevolving: 0, desNew: 0, desRevolving: 1_000_000_000 },
-  { entitas: 'ACML', oktNew: 1_000_000_000, oktRevolving: 0, novNew: 1_000_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
-  { entitas: 'Kinglab', oktNew: 0, oktRevolving: 0, novNew: 1_000_000, novRevolving: 0, desNew: 1_000_000_000, desRevolving: 0 },
-  { entitas: 'MyRobin', oktNew: 0, oktRevolving: 0, novNew: 1_000_000_000, novRevolving: 0, desNew: 0, desRevolving: 1_000_000_000 },
-  { entitas: 'Snackzone', oktNew: 0, oktRevolving: 0, novNew: 1_000_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
-  { entitas: 'Matador Lectro', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 1_000_000_000, desRevolving: 0 },
-  { entitas: 'Merpati Wahana Raya', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 0, desRevolving: 0 },
-  { entitas: 'Tangga', oktNew: 0, oktRevolving: 0, novNew: 2_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
-  { entitas: 'Arkopay', oktNew: 0, oktRevolving: 0, novNew: 500_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
-  { entitas: 'BGR', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 0, desRevolving: 0 },
-  { entitas: 'Yoona', oktNew: 0, oktRevolving: 500_000_000, novNew: 0, novRevolving: 500_000_000, desNew: 0, desRevolving: 500_000_000 },
-  { entitas: 'Rakamin', oktNew: 0, oktRevolving: 500_000_000, novNew: 0, novRevolving: 500_000_000, desNew: 0, desRevolving: 0 },
-  { entitas: 'ACMD', oktNew: 0, oktRevolving: 1_000_000_000, novNew: 0, novRevolving: 1_000_000_000, desNew: 0, desRevolving: 2_000_000_000 },
-  { entitas: 'Pamelindo', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 500_000_000, desNew: 0, desRevolving: 0 },
-  { entitas: 'Eshan', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 0, desRevolving: 500_000_000 },
-  { entitas: 'Taitat', oktNew: 0, oktRevolving: 0, novNew: 1_000_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
+  { entitas: 'Ternakita', oktNew: 1_100_000_000, oktRevolving: 0, novNew: 2_200_000_000, novRevolving: 0, desNew: 0, desRevolving: 1_100_000_000 },
+  { entitas: 'Invonex', oktNew: 1_100_000_000, oktRevolving: 0, novNew: 1_100_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
+  { entitas: 'Labmentari', oktNew: 0, oktRevolving: 0, novNew: 1_200_000, novRevolving: 0, desNew: 1_100_000_000, desRevolving: 0 },
+  { entitas: 'Kerjabantu', oktNew: 0, oktRevolving: 0, novNew: 1_100_000_000, novRevolving: 0, desNew: 0, desRevolving: 1_100_000_000 },
+  { entitas: 'Kudapan Rasa', oktNew: 0, oktRevolving: 0, novNew: 1_100_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
+  { entitas: 'Motorika Jaya', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 1_100_000_000, desRevolving: 0 },
+  { entitas: 'Merapi Wahana Sejahtera', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 0, desRevolving: 0 },
+  { entitas: 'Anak Tangga', oktNew: 0, oktRevolving: 0, novNew: 2_200_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
+  { entitas: 'Dompet Rukun', oktNew: 0, oktRevolving: 0, novNew: 550_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
+  { entitas: 'Gudang Rapi', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 0, desRevolving: 0 },
+  { entitas: 'Cahaya Fatura', oktNew: 0, oktRevolving: 450_000_000, novNew: 0, novRevolving: 450_000_000, desNew: 0, desRevolving: 450_000_000 },
+  { entitas: 'Nusantara Piutang', oktNew: 0, oktRevolving: 460_000_000, novNew: 0, novRevolving: 460_000_000, desNew: 0, desRevolving: 0 },
+  { entitas: 'Dana Fatura Prima', oktNew: 0, oktRevolving: 1_050_000_000, novNew: 0, novRevolving: 1_050_000_000, desNew: 0, desRevolving: 2_100_000_000 },
+  { entitas: 'Palapa Lintas', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 550_000_000, desNew: 0, desRevolving: 0 },
+  { entitas: 'Eltara', oktNew: 0, oktRevolving: 0, novNew: 0, novRevolving: 0, desNew: 0, desRevolving: 550_000_000 },
+  { entitas: 'Tirtayasa', oktNew: 0, oktRevolving: 0, novNew: 1_100_000_000, novRevolving: 0, desNew: 0, desRevolving: 0 },
 ]
 
 export function targetRowTotal(row: TargetRow): number {
@@ -39,13 +39,13 @@ export function targetRowTotal(row: TargetRow): number {
 // tetap ditampilkan apa adanya sesuai spec; SUBTOTAL & KPI memakai angka eksplisit ini supaya
 // konsisten dengan angka yang diberikan di bagian KPI (lihat catatan asumsi).
 export const TARGET_SUBTOTAL = {
-  oktNew: 2_000_000_000,
-  oktRevolving: 2_000_000_000,
-  novNew: 6_000_000_000,
-  novRevolving: 2_000_000_000,
-  desNew: 2_000_000_000,
-  desRevolving: 5_000_000_000,
-  total: 19_000_000_000,
+  oktNew: 2_200_000_000,
+  oktRevolving: 2_200_000_000,
+  novNew: 6_600_000_000,
+  novRevolving: 2_200_000_000,
+  desNew: 2_200_000_000,
+  desRevolving: 5_500_000_000,
+  total: 20_900_000_000,
 }
 
 export interface SaldoKasRow {
@@ -57,19 +57,19 @@ export interface SaldoKasRow {
 
 // Data statis "Saldo Kas" — tidak ada modul input terpisah untuk ini di spesifikasi manapun.
 export const SALDO_KAS: SaldoKasRow[] = [
-  { tanggal: '22 Okt 2024', proyeksi: 17_900_000_000, realisasi: 17_900_000_000 },
-  { tanggal: '31 Okt 2024', proyeksi: 16_000_000_000, realisasi: 16_000_000_000 },
-  { tanggal: '30 Nov 2024', proyeksi: 10_000_000_000, realisasi: 16_000_000_000 },
-  { tanggal: '31 Des 2024', proyeksi: 8_000_000_000, realisasi: 16_000_000_000 },
-  { tanggal: 'Reserves', proyeksi: 5_000_000_000, realisasi: 5_000_000_000 },
-  { tanggal: 'Sisa Saldo Kas', proyeksi: 3_000_000_000, realisasi: 11_000_000_000, isTotal: true },
+  { tanggal: '22 Okt 2024', proyeksi: 19_700_000_000, realisasi: 19_700_000_000 },
+  { tanggal: '31 Okt 2024', proyeksi: 17_600_000_000, realisasi: 17_600_000_000 },
+  { tanggal: '30 Nov 2024', proyeksi: 11_000_000_000, realisasi: 17_600_000_000 },
+  { tanggal: '31 Des 2024', proyeksi: 8_800_000_000, realisasi: 17_600_000_000 },
+  { tanggal: 'Reserves', proyeksi: 5_500_000_000, realisasi: 5_500_000_000 },
+  { tanggal: 'Sisa Saldo Kas', proyeksi: 3_300_000_000, realisasi: 12_100_000_000, isTotal: true },
 ]
 
 // Status kolom pada tabel "Realisasi Pipelines" bersifat statis mengikuti sheet sumber
 // (tidak ada formula eksplisit yang didefinisikan di spesifikasi — lihat catatan asumsi).
 export const REALISASI_STATUS: Record<string, string> = {
-  BroilerX: 'OK',
-  ACML: 'Deficit',
+  Ternakita: 'OK',
+  Invonex: 'Deficit',
 }
 
 export const MONTHS_DASHBOARD = ['Oktober', 'November', 'Desember'] as const
