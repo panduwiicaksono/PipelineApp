@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Download, Rocket } from 'lucide-react'
+import { ArrowLeft, Download, Rocket, Landmark, History as HistoryIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -8,11 +8,12 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { ChecklistSectionView } from '@/components/ChecklistSectionView'
+import { AdminScoredSection } from '@/components/AdminScoredSection'
 import { ProgressSummaryCard } from '@/components/ProgressSummaryCard'
 import { useAppStore } from '@/store/useAppStore'
-import { allItemsHaveStatus, computeProgress } from '@/lib/checklist'
+import { allItemsHaveStatus, computeProgress, computeSkorPoints } from '@/lib/checklist'
 import { formatDateID } from '@/lib/utils'
-import type { PipelineStatus } from '@/types'
+import { ROLE_LABEL, type PipelineStatus } from '@/types'
 
 function deriveStatus(totalProgress: number, released: boolean): PipelineStatus {
   if (released) return 'Released'
@@ -32,6 +33,10 @@ export default function PipelineDetail() {
   const pipeline = useAppStore((s) => s.pipelines.find((p) => p.id === id))
   const setItemFile = useAppStore((s) => s.setItemFile)
   const releasePipeline = useAppStore((s) => s.releasePipeline)
+  const addSlikRow = useAppStore((s) => s.addSlikRow)
+  const addSlikRows = useAppStore((s) => s.addSlikRows)
+  const updateSlikRow = useAppStore((s) => s.updateSlikRow)
+  const removeSlikRow = useAppStore((s) => s.removeSlikRow)
 
   const [showReleaseDialog, setShowReleaseDialog] = useState(false)
   const [showExportDialog, setShowExportDialog] = useState(false)
@@ -50,9 +55,12 @@ export default function PipelineDetail() {
   }
 
   const summary = computeProgress(pipeline.checklist)
+  const score = computeSkorPoints(pipeline.checklist)
   const status = deriveStatus(summary.total, pipeline.released)
   const canRelease = summary.total >= 90 && !pipeline.released
   const canExport = allItemsHaveStatus(pipeline.checklist)
+  const slikItem = pipeline.checklist.find((i) => i.section === 'inisiasi' && i.adminScored && i.label === 'SLIK')
+  const apuPptItem = pipeline.checklist.find((i) => i.section === 'inisiasi' && i.adminScored && i.label === 'APU PPT')
 
   return (
     <div className="space-y-6">
@@ -85,6 +93,7 @@ export default function PipelineDetail() {
           <Field label="Nomor" value={String(pipeline.nomor)} />
           <Field label="Code" value={pipeline.code} />
           <Field label="Tanggal" value={formatDateID(pipeline.tanggal)} />
+          <Field label="Due Date" value={formatDateID(pipeline.dueDate)} />
           <Field label="Nama Entitas" value={pipeline.namaEntitas} />
           <Field label="Keterangan" value={pipeline.keterangan} />
           <Field label="Fasilitas" value={pipeline.fasilitas} />
@@ -92,13 +101,71 @@ export default function PipelineDetail() {
         </CardContent>
       </Card>
 
+      <AdminScoredSection
+        slikItem={slikItem}
+        apuPptItem={apuPptItem}
+        onChooseFile={(itemId, fileName) => setItemFile(pipeline.id, itemId, fileName)}
+        slikRows={pipeline.slikRows}
+        onAddSlikRow={(row) => addSlikRow(pipeline.id, row)}
+        onUpdateSlikRow={(rowId, patch) => updateSlikRow(pipeline.id, rowId, patch)}
+        onRemoveSlikRow={(rowId) => removeSlikRow(pipeline.id, rowId)}
+        onBulkImportSlikRows={(rows) => addSlikRows(pipeline.id, rows)}
+      />
+
       <ChecklistSectionView
         items={pipeline.checklist}
         mode="readonly"
         onReviseFile={(itemId, fileName) => setItemFile(pipeline.id, itemId, fileName)}
       />
 
-      <ProgressSummaryCard summary={summary} />
+      <ProgressSummaryCard summary={summary} score={score} />
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Landmark className="h-4 w-4" />
+            Asset Under Management
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {pipeline.assetsUnderManagement.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Belum ada aset yang dijaminkan.</p>
+          ) : (
+            <ul className="divide-y divide-border/60 rounded-xl border border-border/60">
+              {pipeline.assetsUnderManagement.map((a) => (
+                <li key={a.id} className="flex items-center justify-between p-3 text-sm">
+                  <span className="font-medium text-foreground">{a.nama}</span>
+                  <span className="text-xs text-muted-foreground">{a.jenisDokumen}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <HistoryIcon className="h-4 w-4" />
+            Activity Log
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {pipeline.activityLog.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Belum ada aktivitas.</p>
+          ) : (
+            <ul className="divide-y divide-border/60 rounded-xl border border-border/60">
+              {pipeline.activityLog.map((entry) => (
+                <li key={entry.id} className="p-3 text-sm">
+                  <span className="font-medium text-foreground">{entry.aktor}</span>{' '}
+                  <span className="text-xs text-muted-foreground">({ROLE_LABEL[entry.aktorRole]})</span> {entry.aksi}
+                  <span className="ml-2 text-xs text-muted-foreground">— {entry.waktuRelatif}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -126,7 +193,7 @@ export default function PipelineDetail() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Konfirmasi Release</DialogTitle>
-            <DialogDescription>Pipeline ini akan ditandai "Released" dan bisa diinput pencairannya di modul Realisasi.</DialogDescription>
+            <DialogDescription>Pipeline ini akan ditandai "Released" dan bisa diinput pencairannya di menu Input Realisasi.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowReleaseDialog(false)}>

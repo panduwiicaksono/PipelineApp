@@ -9,11 +9,13 @@ import { formatRupiah } from '@/lib/utils'
 import { SALDO_KAS, TARGET_PIPELINES, TARGET_SUBTOTAL, targetRowTotal } from '@/lib/dashboardData'
 import { buildAchievementRows, buildMonthlyFigures, buildRealisasiRows, totalRealisasi, totalTargetPipeline } from '@/lib/dashboardCompute'
 
+// Isi halaman ini PERSIS SAMA dengan Dashboard Admin lama (sebelum 06-update-round2), hanya
+// dipindahkan ke menu & route "/portofolio" (lihat 06-update-round2 poin 2).
 function cell(value: number) {
   return value === 0 ? <span className="text-muted-foreground">-</span> : formatRupiah(value)
 }
 
-export default function AdminDashboard() {
+export default function Portofolio() {
   const pipelines = useAppStore((s) => s.pipelines)
 
   const targetTotal = totalTargetPipeline()
@@ -47,7 +49,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard Admin</h1>
+        <h1 className="text-2xl font-bold text-foreground">Portofolio</h1>
         <p className="text-sm text-muted-foreground">Ringkasan target, realisasi, dan saldo kas pipeline pembiayaan.</p>
       </div>
 

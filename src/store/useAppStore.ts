@@ -1,6 +1,16 @@
 import { create } from 'zustand'
-import type { ChecklistItem, CurrentUser, DisbursementEntry, ItemStatus, Pipeline, PipelineData, Role } from '@/types'
-import { createChecklistTemplate } from '@/lib/checklist'
+import type {
+  ActivityLogEntry,
+  ChecklistItem,
+  CurrentUser,
+  DisbursementEntry,
+  Likert,
+  Pipeline,
+  PipelineData,
+  Role,
+  SlikRow,
+} from '@/types'
+import { createChecklistTemplate, deriveStatusFromLikert } from '@/lib/checklist'
 import { createSeedPipelines } from './seed'
 
 let disbursementIdCounter = 1000
@@ -9,9 +19,21 @@ function nextDisbursementId() {
   return `dsb-${disbursementIdCounter}`
 }
 
+let activityIdCounter = 1000
+function nextActivityId() {
+  activityIdCounter += 1
+  return `act-${activityIdCounter}`
+}
+
+let slikRowIdCounter = 1000
+function nextSlikRowId() {
+  slikRowIdCounter += 1
+  return `slik-${slikRowIdCounter}`
+}
+
 export interface ReviewUpdate {
   itemId: string
-  status?: ItemStatus
+  likert?: Likert | null
   notes?: string
   remarks?: string
 }
@@ -25,12 +47,21 @@ interface AppState {
 
   addPipeline: (data: PipelineData) => string
   setItemFile: (pipelineId: string, itemId: string, fileName: string) => void
+  // Dipakai halaman Review biasa & Review Fase 1 (SLIK/APU PPT) — lihat
+  // 07-koreksi-skor-poin poin 4.
   applyReviewUpdates: (pipelineId: string, updates: ReviewUpdate[]) => void
   releasePipeline: (pipelineId: string) => void
 
   addDisbursementMonth: (pipelineId: string, month: string) => void
   addDisbursementEntry: (pipelineId: string, month: string, type: 'new' | 'revolving', nominal: number, fileName?: string) => void
   removeDisbursementEntry: (pipelineId: string, month: string, type: 'new' | 'revolving', entryId: string) => void
+
+  addSlikRow: (pipelineId: string, row: Omit<SlikRow, 'id'>) => void
+  addSlikRows: (pipelineId: string, rows: Omit<SlikRow, 'id'>[]) => void
+  updateSlikRow: (pipelineId: string, rowId: string, patch: Partial<Omit<SlikRow, 'id'>>) => void
+  removeSlikRow: (pipelineId: string, rowId: string) => void
+
+  addActivityLog: (pipelineId: string, entry: Omit<ActivityLogEntry, 'id'>) => void
 }
 
 function nextNomor(pipelines: Pipeline[]): number {
@@ -56,6 +87,9 @@ export const useAppStore = create<AppState>((set, get) => ({
           checklist: createChecklistTemplate(),
           released: false,
           disbursements: {},
+          assetsUnderManagement: [],
+          activityLog: [],
+          slikRows: [],
         },
       ],
     }))
@@ -85,9 +119,11 @@ export const useAppStore = create<AppState>((set, get) => ({
           checklist: p.checklist.map((item) => {
             const u = map.get(item.id)
             if (!u) return item
-            const nextStatus = u.status !== undefined ? u.status : item.status
+            const nextLikert = u.likert !== undefined ? u.likert : item.likert
+            const nextStatus = deriveStatusFromLikert(nextLikert ?? null)
             return {
               ...item,
+              likert: nextLikert ?? null,
               status: nextStatus,
               notes: u.notes !== undefined ? u.notes : item.notes,
               remarks: u.remarks !== undefined ? u.remarks : item.remarks,
@@ -103,6 +139,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((state) => ({
       pipelines: state.pipelines.map((p) => (p.id === pipelineId ? { ...p, released: true } : p)),
     }))
+    get().addActivityLog(pipelineId, {
+      aktor: get().currentUser?.username ?? 'Admin',
+      aktorRole: get().currentUser?.role ?? 'admin_investasi',
+      aksi: 'Me-release pipeline',
+      waktu: 'Baru saja',
+      waktuRelatif: 'Baru saja',
+    })
   },
 
   addDisbursementMonth: (pipelineId, month) => {
@@ -136,6 +179,44 @@ export const useAppStore = create<AppState>((set, get) => ({
         const updatedMonth = { ...monthData, [type]: monthData[type].filter((e) => e.id !== entryId) }
         return { ...p, disbursements: { ...p.disbursements, [month]: updatedMonth } }
       }),
+    }))
+  },
+
+  addSlikRow: (pipelineId, row) => {
+    set((state) => ({
+      pipelines: state.pipelines.map((p) =>
+        p.id !== pipelineId ? p : { ...p, slikRows: [...p.slikRows, { ...row, id: nextSlikRowId() }] },
+      ),
+    }))
+  },
+
+  addSlikRows: (pipelineId, rows) => {
+    set((state) => ({
+      pipelines: state.pipelines.map((p) =>
+        p.id !== pipelineId ? p : { ...p, slikRows: [...p.slikRows, ...rows.map((r) => ({ ...r, id: nextSlikRowId() }))] },
+      ),
+    }))
+  },
+
+  updateSlikRow: (pipelineId, rowId, patch) => {
+    set((state) => ({
+      pipelines: state.pipelines.map((p) =>
+        p.id !== pipelineId ? p : { ...p, slikRows: p.slikRows.map((r) => (r.id === rowId ? { ...r, ...patch } : r)) },
+      ),
+    }))
+  },
+
+  removeSlikRow: (pipelineId, rowId) => {
+    set((state) => ({
+      pipelines: state.pipelines.map((p) => (p.id !== pipelineId ? p : { ...p, slikRows: p.slikRows.filter((r) => r.id !== rowId) })),
+    }))
+  },
+
+  addActivityLog: (pipelineId, entry) => {
+    set((state) => ({
+      pipelines: state.pipelines.map((p) =>
+        p.id !== pipelineId ? p : { ...p, activityLog: [{ ...entry, id: nextActivityId() }, ...p.activityLog] },
+      ),
     }))
   },
 }))

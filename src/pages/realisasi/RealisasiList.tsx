@@ -63,7 +63,7 @@ export default function RealisasiList() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" onClick={() => navigate(`/realisasi/${p.id}`)}>
+                        <Button size="sm" onClick={() => navigate(`/input-realisasi/${p.id}`)}>
                           <PencilLine className="h-3.5 w-3.5" />
                           Input Pencairan
                         </Button>

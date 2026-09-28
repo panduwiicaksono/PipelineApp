@@ -18,6 +18,9 @@ function groupItems(items: ChecklistItem[]) {
   const bySection = new Map<ChecklistSection, Map<string, ChecklistItem[]>>()
   for (const section of SECTION_ORDER) bySection.set(section, new Map())
   for (const item of items) {
+    // SLIK & APU PPT (adminScored) dirender terpisah lewat AdminScoredSection, bukan di sini
+    // (06-update-round2 poin 7).
+    if (item.adminScored) continue
     const groups = bySection.get(item.section)
     if (!groups) continue
     if (!groups.has(item.group)) groups.set(item.group, [])

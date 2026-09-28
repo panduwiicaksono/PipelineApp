@@ -44,7 +44,7 @@ https://jakartaventura.com/assets/img/logo/jakvent-logo.svg
 - Field: Username/Email (text), Password (password, ada toggle show/hide), dan Role
   (dropdown/select) — KARENA BELUM ADA BACKEND, field Role ini WAJIB dan menentukan
   dashboard/menu apa yang akan tampil setelah login. Opsi Role: Admin, Appraisal, Investasi,
-  Legal, Relationship Manager (RM).
+  Legal, Risk Management (RM).
 - Tombol "Login": karena belum ada backend, cukup validasi field terisi lalu simpan role
   yang dipilih ke zustand store (currentUser: { role }) dan redirect ke "/dashboard".
 - Sediakan cara logout (dari sidebar) yang mengembalikan ke "/login" dan clear state role.
@@ -56,7 +56,7 @@ https://jakartaventura.com/assets/img/logo/jakvent-logo.svg
   - appraisal: Dashboard, Review
   - investasi: Dashboard, Review
   - legal: Dashboard, Review
-  - rm (Relationship Manager): Dashboard, Review
+  - rm (Risk Management): Dashboard, Review
 - Tiap menu item = icon (lucide-react) + label, item yang sedang aktif (sesuai route)
   ditandai dengan style berbeda (background lembut / teks bold).
 - Logo & nama "Jakvent" di bagian atas sidebar.

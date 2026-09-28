@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom'
-import { ClipboardList } from 'lucide-react'
+import { ClipboardList, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useAppStore } from '@/store/useAppStore'
 import { formatDateID } from '@/lib/utils'
+import { formatSkorPoin, scopeMaxPoints, scopePoints } from '@/lib/checklist'
+import { computeFase1, FASE1_LOCK_MESSAGE } from '@/lib/fase1'
 import type { ReviewRole } from '@/types'
 
 type ReviewStatus = 'Belum Direview' | 'Sedang Berjalan' | 'Selesai'
@@ -29,6 +31,7 @@ export default function ReviewList() {
   const currentUser = useAppStore((s) => s.currentUser)
   const pipelines = useAppStore((s) => s.pipelines)
   const role = currentUser?.role as ReviewRole
+  const scopeMax = scopeMaxPoints(role)
 
   return (
     <div className="space-y-6">
@@ -53,13 +56,17 @@ export default function ReviewList() {
                 <TableHead>Tanggal</TableHead>
                 <TableHead>Jumlah Dokumen</TableHead>
                 <TableHead>Status Review</TableHead>
+                <TableHead>Skor</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pipelines.map((p) => {
-                const scoped = p.checklist.filter((i) => i.reviewRole === role)
+                // SLIK & APU PPT dikecualikan dari scope Review (dinilai langsung oleh Admin,
+                // lihat 06-update-round2 poin 7).
+                const scoped = p.checklist.filter((i) => i.reviewRole === role && !i.adminScored)
                 const status = reviewStatusFor(scoped)
+                const fase1 = computeFase1(p.checklist)
                 return (
                   <TableRow key={p.id}>
                     <TableCell>{p.nomor}</TableCell>
@@ -72,11 +79,22 @@ export default function ReviewList() {
                     <TableCell>
                       <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
                     </TableCell>
+                    <TableCell className="whitespace-nowrap text-sm">{formatSkorPoin(scopePoints(p.checklist, role), scopeMax)}</TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" onClick={() => navigate(`/review/${p.id}`)}>
-                        <ClipboardList className="h-3.5 w-3.5" />
-                        Review
-                      </Button>
+                      {fase1.passed ? (
+                        <Button size="sm" onClick={() => navigate(`/review/${p.id}`)}>
+                          <ClipboardList className="h-3.5 w-3.5" />
+                          Review
+                        </Button>
+                      ) : (
+                        <div className="flex flex-col items-end gap-1">
+                          <Button size="sm" disabled title={FASE1_LOCK_MESSAGE}>
+                            <Lock className="h-3.5 w-3.5" />
+                            Review
+                          </Button>
+                          <span className="max-w-[220px] text-right text-[11px] text-muted-foreground">{FASE1_LOCK_MESSAGE}</span>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 )

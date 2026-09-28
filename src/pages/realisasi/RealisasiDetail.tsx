@@ -33,7 +33,7 @@ export default function RealisasiDetail() {
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">Pipeline tidak ditemukan.</p>
-        <Button variant="outline" onClick={() => navigate('/realisasi')}>
+        <Button variant="outline" onClick={() => navigate('/input-realisasi')}>
           <ArrowLeft className="h-4 w-4" />
           Kembali
         </Button>
@@ -88,7 +88,7 @@ export default function RealisasiDetail() {
   return (
     <div className="space-y-6">
       <div>
-        <Button variant="ghost" size="sm" className="mb-2 -ml-2" onClick={() => navigate('/realisasi')}>
+        <Button variant="ghost" size="sm" className="mb-2 -ml-2" onClick={() => navigate('/input-realisasi')}>
           <ArrowLeft className="h-4 w-4" />
           Kembali
         </Button>

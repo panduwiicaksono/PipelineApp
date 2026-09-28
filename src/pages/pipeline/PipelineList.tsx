@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { Plus, Eye, Rocket, Download, PartyPopper } from 'lucide-react'
+import { Plus, Eye, Rocket, Download, PartyPopper, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { useAppStore } from '@/store/useAppStore'
-import { allItemsHaveStatus, computeProgress } from '@/lib/checklist'
+import { allItemsHaveStatus, computeProgress, computeSkorPoints, formatSkorPoin } from '@/lib/checklist'
 import { formatDateID } from '@/lib/utils'
 import type { PipelineStatus } from '@/types'
 
@@ -60,6 +60,7 @@ export default function PipelineList() {
                 <TableHead>Batch</TableHead>
                 <TableHead>Tanggal</TableHead>
                 <TableHead className="min-w-[160px]">Total Progress</TableHead>
+                <TableHead>Skor</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
@@ -70,6 +71,7 @@ export default function PipelineList() {
                 const status = deriveStatus(progress.total, p.released)
                 const canRelease = progress.total >= 90 && !p.released
                 const canExport = allItemsHaveStatus(p.checklist)
+                const score = computeSkorPoints(p.checklist)
                 return (
                   <TableRow key={p.id}>
                     <TableCell>{p.nomor}</TableCell>
@@ -85,6 +87,7 @@ export default function PipelineList() {
                         <span className="text-xs font-semibold tabular-nums">{progress.total}%</span>
                       </div>
                     </TableCell>
+                    <TableCell className="whitespace-nowrap text-sm">{formatSkorPoin(score.total, score.totalMax)}</TableCell>
                     <TableCell>
                       <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
                     </TableCell>
@@ -93,6 +96,10 @@ export default function PipelineList() {
                         <Button size="sm" variant="outline" onClick={() => navigate(`/pipeline/${p.id}`)}>
                           <Eye className="h-3.5 w-3.5" />
                           Detail
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => navigate(`/pipeline/${p.id}/review-fase1`)}>
+                          <ClipboardCheck className="h-3.5 w-3.5" />
+                          Review
                         </Button>
                         <Button size="sm" variant="outline" disabled={!canRelease} onClick={() => setReleaseTarget(p.id)}>
                           <Rocket className="h-3.5 w-3.5" />
@@ -118,7 +125,7 @@ export default function PipelineList() {
             <DialogTitle className="flex items-center gap-2">
               <PartyPopper className="h-5 w-5 text-primary" /> Release Pipeline
             </DialogTitle>
-            <DialogDescription>Pipeline ini akan ditandai sebagai "Released" dan siap masuk ke modul Realisasi.</DialogDescription>
+            <DialogDescription>Pipeline ini akan ditandai sebagai "Released" dan siap masuk ke menu Input Realisasi.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setReleaseTarget(null)}>

@@ -10,7 +10,7 @@ import { useAppStore } from '@/store/useAppStore'
 import type { Role } from '@/types'
 import { ROLE_LABEL } from '@/types'
 
-const ROLE_OPTIONS: Role[] = ['admin', 'appraisal', 'investasi', 'legal', 'rm']
+const ROLE_OPTIONS: Role[] = ['admin_investasi', 'administrator', 'appraisal', 'investasi', 'legal', 'rm']
 
 export default function Login() {
   const navigate = useNavigate()

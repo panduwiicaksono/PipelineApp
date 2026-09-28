@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Workflow, ClipboardCheck, Wallet, LogOut } from 'lucide-react'
+import { LayoutDashboard, Workflow, ClipboardCheck, Wallet, History, PieChart, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store/useAppStore'
 import type { Role } from '@/types'
@@ -10,28 +10,27 @@ interface MenuItem {
   icon: typeof LayoutDashboard
 }
 
+// Admin Investasi & Administrator: sidebar PERSIS SAMA (06-update-round2 poin 1).
+const ADMIN_MENU: MenuItem[] = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/pipeline', label: 'Pipeline', icon: Workflow },
+  { to: '/portofolio', label: 'Portofolio', icon: PieChart },
+  { to: '/input-realisasi', label: 'Input Realisasi', icon: Wallet },
+  { to: '/activity-log', label: 'Activity Log', icon: History },
+]
+
+const REVIEWER_MENU: MenuItem[] = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/review', label: 'Review', icon: ClipboardCheck },
+]
+
 const MENUS: Record<Role, MenuItem[]> = {
-  admin: [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/pipeline', label: 'Pipeline', icon: Workflow },
-    { to: '/realisasi', label: 'Realisasi', icon: Wallet },
-  ],
-  appraisal: [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/review', label: 'Review', icon: ClipboardCheck },
-  ],
-  investasi: [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/review', label: 'Review', icon: ClipboardCheck },
-  ],
-  legal: [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/review', label: 'Review', icon: ClipboardCheck },
-  ],
-  rm: [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/review', label: 'Review', icon: ClipboardCheck },
-  ],
+  admin_investasi: ADMIN_MENU,
+  administrator: ADMIN_MENU,
+  appraisal: REVIEWER_MENU,
+  investasi: REVIEWER_MENU,
+  legal: REVIEWER_MENU,
+  rm: REVIEWER_MENU,
 }
 
 export function Sidebar() {

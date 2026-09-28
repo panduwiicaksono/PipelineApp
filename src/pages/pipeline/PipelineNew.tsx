@@ -6,10 +6,17 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChecklistSectionView } from '@/components/ChecklistSectionView'
+import { AdminScoredSection } from '@/components/AdminScoredSection'
 import { ProgressSummaryCard } from '@/components/ProgressSummaryCard'
 import { useAppStore } from '@/store/useAppStore'
-import { createChecklistTemplate, computeProgress } from '@/lib/checklist'
-import type { ChecklistItem, PipelineData } from '@/types'
+import { createChecklistTemplate, computeProgress, computeSkorPoints } from '@/lib/checklist'
+import type { ChecklistItem, PipelineData, SlikRow } from '@/types'
+
+let localSlikIdCounter = 0
+function localSlikId() {
+  localSlikIdCounter += 1
+  return `local-slik-${localSlikIdCounter}`
+}
 
 export default function PipelineNew() {
   const navigate = useNavigate()
@@ -18,14 +25,19 @@ export default function PipelineNew() {
   const [data, setData] = useState<PipelineData>({
     code: '',
     tanggal: '',
+    dueDate: '',
     namaEntitas: '',
     keterangan: '',
     fasilitas: '',
     batch: '',
   })
   const [checklist, setChecklist] = useState<ChecklistItem[]>(() => createChecklistTemplate())
+  const [slikRows, setSlikRows] = useState<SlikRow[]>([])
 
   const summary = computeProgress(checklist)
+  const score = computeSkorPoints(checklist)
+  const slikItem = checklist.find((i) => i.section === 'inisiasi' && i.adminScored && i.label === 'SLIK')
+  const apuPptItem = checklist.find((i) => i.section === 'inisiasi' && i.adminScored && i.label === 'APU PPT')
 
   function handleChooseFile(itemId: string, fileName: string) {
     setChecklist((prev) => prev.map((i) => (i.id === itemId ? { ...i, fileName } : i)))
@@ -37,12 +49,19 @@ export default function PipelineNew() {
       return
     }
     const id = addPipeline(data)
-    // Attach any files already chosen before save (new pipeline starts with fresh
-    // checklist in the store, so re-apply file selections made in this form).
-    const setItemFile = useAppStore.getState().setItemFile
+    // Pipeline baru start dengan checklist & slikRows kosong di store, jadi re-apply pilihan
+    // file yang sudah dibuat di form ini (pola sama seperti sebelumnya). Skor Likert TIDAK
+    // diisi di sini lagi — lihat AdminScoredSection & 07-koreksi-skor-poin poin 4.
+    const store = useAppStore.getState()
     checklist.forEach((item) => {
-      if (item.fileName) setItemFile(id, item.id, item.fileName)
+      if (item.fileName) store.setItemFile(id, item.id, item.fileName)
     })
+    if (slikRows.length > 0) {
+      store.addSlikRows(
+        id,
+        slikRows.map(({ id: _rowId, ...rest }) => rest),
+      )
+    }
     navigate('/pipeline')
   }
 
@@ -71,6 +90,10 @@ export default function PipelineNew() {
             <Input type="date" value={data.tanggal} onChange={(e) => setData({ ...data, tanggal: e.target.value })} />
           </div>
           <div className="space-y-2">
+            <Label>Due Date</Label>
+            <Input type="date" value={data.dueDate} onChange={(e) => setData({ ...data, dueDate: e.target.value })} />
+          </div>
+          <div className="space-y-2">
             <Label>Nama Entitas</Label>
             <Input value={data.namaEntitas} onChange={(e) => setData({ ...data, namaEntitas: e.target.value })} placeholder="Nama perusahaan" />
           </div>
@@ -89,9 +112,20 @@ export default function PipelineNew() {
         </CardContent>
       </Card>
 
+      <AdminScoredSection
+        slikItem={slikItem}
+        apuPptItem={apuPptItem}
+        onChooseFile={handleChooseFile}
+        slikRows={slikRows}
+        onAddSlikRow={(row) => setSlikRows((prev) => [...prev, { ...row, id: localSlikId() }])}
+        onUpdateSlikRow={(rowId, patch) => setSlikRows((prev) => prev.map((r) => (r.id === rowId ? { ...r, ...patch } : r)))}
+        onRemoveSlikRow={(rowId) => setSlikRows((prev) => prev.filter((r) => r.id !== rowId))}
+        onBulkImportSlikRows={(rows) => setSlikRows((prev) => [...prev, ...rows.map((r) => ({ ...r, id: localSlikId() }))])}
+      />
+
       <ChecklistSectionView items={checklist} mode="upload" onChooseFile={handleChooseFile} />
 
-      <ProgressSummaryCard summary={summary} />
+      <ProgressSummaryCard summary={summary} score={score} />
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => navigate('/pipeline')}>
